@@ -1,0 +1,226 @@
+Create EC2 Instance
+Use Ubuntu 18
+Select Key Pair
+Open port 22
+
+# Copy github key to EC2
+cd ~/.ssh
+scp -i gjohn.pem id_ed25519 ubuntu@54.211.23.224:/home/ubuntu/.ssh
+scp -i gjohn.pem id_ed25519.pub ubuntu@54.211.23.224:/home/ubuntu/.ssh
+
+# LP Solve
+sudo apt update
+sudo apt install lp-solve
+
+https://hackersandslackers.com/multiple-versions-python-ubuntu/
+
+sudo apt update && sudo apt upgrade -y
+sudo apt-get install build-essential checkinstall
+sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev \
+libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev \
+liblzma-dev lzma
+cd /opt
+sudo wget http://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
+sudo tar -zxvf Python-3.7.3.tgz
+cd Python-3.7.3
+sudo ./configure --enable-optimizations
+sudo make altinstall
+sudo update-alternatives --install /usr/bin/python python /opt/Python-3.7.3/python 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
+
+python -m venv ~/venv/.devops
+source ~/venv/.devops/bin/activate
+
+make install
+
+MiniKube
+
+https://www.radishlogic.com/kubernetes/running-minikube-in-aws-ec2-ubuntu/
+https://www.bogotobogo.com/DevOps/Docker/Docker-Kubernetes-Minikube-install-on-AWS-EC2.php
+
+# Adjust arch
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+kubectl version --client
+
+sudo apt-get update -y &&  sudo apt-get install -y docker.io
+sudo docker version
+service docker.io status
+service docker.io start
+
+curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+&& chmod +x minikube \
+&& sudo mv minikube /usr/local/bin/
+minikube version
+
+minikube start --driver=docker
+
+
+Docker
+
+https://docs.docker.com/desktop/install/linux-install/
+https://docs.docker.com/desktop/install/ubuntu/
+
+
+hadolint
+
+Adjust arch as needed
+sudo wget -O ~/venv/.devops/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
+chmod +x ~/venv/.devops/bin/hadolint
+
+
+================================================================================
+PLAN
+================================================================================
+
+Build small LP model using Python and LP Solve 
+Truck, Product, Factory, Store
+
+Borrow app.py and make_prediction.py to build LP solver
+Send input to port   
+Where does the output go?
+
+CircleCI 
+
+	Triggered by push to Github
+		So code changed and Docker image changes
+	
+	Lint software (Dockerfile, *py)
+	
+	Build Docker Image
+
+		Load LP-Solve and other software
+	
+	Test Docker Image with Small Run
+	
+	Upload Docker Image to DockerHub
+	
+	Deploy Kubernetes Server
+	
+		Start server w/ Cloudformation
+		Configure server w/ Ansible
+			Load minikube
+			Start minikube
+			
+	
+	
+	
+
+
+
+================================================================================
+README
+================================================================================
+
+
+<include a CircleCI status badge, here>
+
+## Project Overview
+
+In this project, you will apply the skills you have acquired in this course to operationalize a Machine Learning Microservice API. 
+
+You are given a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several features, such as average rooms in a home and data about highway access, teacher-to-pupil ratios, and so on. You can read more about the data, which was initially taken from Kaggle, on [the data source site](https://www.kaggle.com/c/boston-housing). This project tests your ability to operationalize a Python flask app—in a provided file, `app.py`—that serves out predictions (inference) about housing prices through API calls. This project could be extended to any pre-trained machine learning model, such as those for image recognition and data labeling.
+
+### Project Tasks
+
+Your project goal is to operationalize this working, machine learning microservice using [kubernetes](https://kubernetes.io/), which is an open-source system for automating the management of containerized applications. In this project you will:
+* Test your project code using linting
+* Complete a Dockerfile to containerize this application
+* Deploy your containerized application using Docker and make a prediction
+* Improve the log statements in the source code for this application
+* Configure Kubernetes and create a Kubernetes cluster
+* Deploy a container using Kubernetes and make a prediction
+* Upload a complete Github repo with CircleCI to indicate that your code has been tested
+
+You can find a detailed [project rubric, here](https://review.udacity.com/#!/rubrics/2576/view).
+
+**The final implementation of the project will showcase your abilities to operationalize production microservices.**
+
+---
+
+## Setup the Environment
+
+* Create a virtualenv with Python 3.7 and activate it. Refer to this link for help on specifying the Python version in the virtualenv. 
+```bash
+python3 -m pip install --user virtualenv
+# You should have Python 3.7 available in your host. 
+# Check the Python path using `which python3`
+# Use a command similar to this one:
+python3 -m virtualenv --python=<path-to-Python3.7> .devops
+source .devops/bin/activate
+```
+* Run `make install` to install the necessary dependencies
+
+### Running `app.py`
+
+1. Standalone:  `python app.py`
+2. Run in Docker:  `./run_docker.sh`
+3. Run in Kubernetes:  `./run_kubernetes.sh`
+
+### Kubernetes Steps
+
+* Setup and Configure Docker locally
+* Setup and Configure Kubernetes locally
+* Create Flask app in Container
+* Run via kubectl
+
+================================================================================
+Rubric
+================================================================================
+PROJECT SPECIFICATION
+Capstone- Cloud DevOps
+
+Set Up Pipeline
+
+CRITERIA
+MEETS SPECIFICATIONS
+Create Github repository with project code.
+
+All project code is stored in a GitHub repository and a link to the repository has been provided for reviewers.
+
+Use image repository to store Docker images
+
+The project uses a centralized image repository to manage images built in the project. After a clean build, images are pushed to the repository.
+
+Build Docker Container
+
+CRITERIA
+MEETS SPECIFICATIONS
+Execute linting step in code pipeline
+
+Code is checked against a linter as part of a Continuous Integration step (demonstrated w/ two screenshots)
+
+Build a Docker container in a pipeline
+
+The project takes a Dockerfile and creates a Docker container in the pipeline.
+
+Successful Deployment
+
+CRITERIA
+MEETS SPECIFICATIONS
+The Docker container is deployed to a Kubernetes cluster
+
+The cluster is deployed with CloudFormation or Ansible. This should be in the source code of the student’s submission.
+
+Use Blue/Green Deployment or a Rolling Deployment successfully
+
+The project performs the correct steps to do a blue/green or a rolling deployment into the environment selected. Student demonstrates the successful completion of chosen deployment methodology with screenshots.
+
+
+
+================================================================================
+Spare stuff
+================================================================================
+
+
+Git
+
+sudo apt install git-all
+
+https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+
+
+
+sudo lsof -i -P | grep LISTEN
+
