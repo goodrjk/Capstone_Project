@@ -18,7 +18,7 @@ install:
 	#chmod +x ./hadolint
 	sudo apt update
 	sudo apt install lp-solve
-	which lp-solve
+	which lp_solve
 
 test:
 	# Additional, optional, tests could go here
