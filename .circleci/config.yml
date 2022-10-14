@@ -32,6 +32,9 @@ jobs:
       - run:
           name: Lint code
           command: |
+            echo $PATH
+            export PATH="$HOME/.local/bin:$PATH"
+            echo $PATH
             ls -al
             make setup
             make install
