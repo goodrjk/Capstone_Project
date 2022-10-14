@@ -33,8 +33,7 @@ jobs:
           name: Lint code
           command: |
             ls -al
-            wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
-            chmod +x ./hadolint
+            make setup
             make install
             make lint
 
