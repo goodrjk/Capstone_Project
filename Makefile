@@ -12,6 +12,7 @@ setup:
 
 install:
 	# This should be run from inside a virtualenv
+	sudo apt install libgmp-dev python3-dev
 	pip install --user --upgrade pip &&\
 		pip install --user -r requirements.txt
 	wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
