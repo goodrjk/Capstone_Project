@@ -8,7 +8,7 @@
 setup:
 	# Create python virtualenv & source it
 	python3 -m venv ~/venv/.part5
-	source ~/venv/.part5/bin/activate
+	. ~/venv/.part5/bin/activate
 
 install:
 	# This should be run from inside a virtualenv
