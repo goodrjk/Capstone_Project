@@ -47,8 +47,7 @@ jobs:
       - run:
           name: Build docker image
           command: |
-            which docker
-            #./run_docker.sh
+            ./build_upload_docker.sh
 
   test-frontend:
     docker:

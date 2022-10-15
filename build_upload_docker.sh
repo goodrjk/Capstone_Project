@@ -3,7 +3,7 @@
 # Step 1:
 # Build image and add a descriptive tag
 # The . is the path
-docker build --tag=gjohn_ .
+docker build --tag=capstone .
 
 # Step 2: 
 # List docker images
@@ -11,16 +11,16 @@ docker image ls
 
 # Step 3: 
 # Run flask app
-docker run -p 8000:80 gjohn_local
+#docker run -p 8000:80 capstone
 
 # Step 4:
 # Create dockerpath
-dockerpath=goodrjk/udacity_4:firstimage
+dockerpath=goodrjk/udacity_5:firstimage
 
 # Step 5:  
 # Authenticate & tag
 echo "Docker ID and Image: $dockerpath"
-docker tag dd441368f48a $dockerpath
+docker tag capstone $dockerpath
 
 # Step 6:
 # Push image to a docker repository
