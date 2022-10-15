@@ -50,7 +50,7 @@ jobs:
             echo "docker ce 1"
             sudo apt install docker-ce
             echo "sysctl"
-            sudo systemctl status docker
+            #sudo systemctl status docker
             echo "Docker"
             docker
             docker info
