@@ -37,14 +37,21 @@ jobs:
             whoami
             uname -a
             cat /etc/os-release
+            echo "Update 1"
             sudo apt update
             sudo apt install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+            echo "curl"
             curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+            echo "add apt docker"
             sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
             sudo apt update
+            echo "apt cache"
             apt-cache policy docker-ce
+            echo "docker ce 1"
             sudo apt install docker-ce
+            echo "sysctl"
             sudo systemctl status docker
+            echo "Docker"
             docker
             docker info
             docker run hello-world
