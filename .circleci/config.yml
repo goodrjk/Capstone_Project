@@ -23,27 +23,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm s3://udapeople-<< parameters.id >> --recursive
-            #aws s3 rb s3://udapeople-<< parameters.id >> --force
-            aws cloudformation delete-stack --region << parameters.region >> --stack-name UdaPeople-BackEnd-<< parameters.id >>
-            aws cloudformation delete-stack --region << parameters.region >> --stack-name UdaPeople-FrontEnd-<< parameters.id >>
-
+            aws cloudformation delete-stack --region << parameters.region >> --stack-name Capstone-<< parameters.id >>
           
 jobs:
-
-  docker-load:
-    executor: docker-publisher
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: docker build --tag "${IMAGE_TAG}" .
-      - run:
-          name: Push Docker image
-          command: |
-            echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-            docker push "${IMAGE_TAG}"
 
   lint-code:
     docker:
@@ -59,16 +41,19 @@ jobs:
             make lint
             make test
 
-
-  build-docker-image:
-    docker:
-      - image: circleci/python:3.7.3-stretch
+  docker-load:
+    executor: docker-publisher
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: Build docker image
+          name: Build Docker image
+          command: docker build --tag "${IMAGE_TAG}" .
+      - run:
+          name: Push Docker image
           command: |
-            ./build_upload_docker.sh
+            echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
+            docker push "${IMAGE_TAG}"
 
   deploy-infrastructure:
     docker:
@@ -81,26 +66,17 @@ jobs:
           command: |
             aws cloudformation deploy \
               --region us-east-1 \
-              --template-file .circleci/files/backend.yml \
-              --tags project=UdaPeople \
-              --stack-name "UdaPeople-BackEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --template-file .circleci/files/kubernetes.yml \
+              --tags project=Capstone \
+              --stack-name "Capstone-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
           #no_output_timeout: 30m
-      - run:
-          name: Ensure front-end infrastructure exist
-          command: |
-            aws cloudformation deploy \
-              --region us-east-1 \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=UdaPeople \
-              --stack-name "UdaPeople-FrontEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
             aws ec2 describe-instances \
               --region us-east-1 \
-              --filters "Name=tag:Name,Values=UdaPeople-BackEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:Name,Values=Capstone-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
       - run: cat .circleci/ansible/inventory.txt
@@ -117,16 +93,8 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
         environment:
-          PATH: "/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
-          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
-          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
-          TYPEORM_HOST: $TYPEORM_HOST
-          TYPEORM_PORT: $TYPEORM_PORT
-          TYPEORM_USERNAME: $TYPEORM_USERNAME
-          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
-          TYPEORM_DATABASE: $TYPEORM_DATABASE
-          TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
-          TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
+          PATH: "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
+          #TYPEORM_CONNECTION: $TYPEORM_CONNECTION
     steps:
       - run:
           name: Install dependencies - ssh git
@@ -154,15 +122,6 @@ jobs:
           name: Configure server
           command: |
             echo ENVIRONMENT=production > "backend/.env"
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
             cd .circleci/ansible
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt configure-server.yml
@@ -675,7 +634,8 @@ jobs:
 workflows:
   default:
     jobs:
-      - docker-load
+      - deploy-infrastructure
+#      - docker-load
 #      - lint-code
 #      - build-docker-image:
 #          requires: [lint-code]
