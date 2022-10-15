@@ -227,7 +227,7 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-  deploy-infrastructure:
+  deploy-infrastructure_old:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -270,7 +270,7 @@ jobs:
           event: on_fail
           region: us-east-1
 
-  configure-infrastructure:
+  configure-infrastructure_old:
     docker:
       - image: python:3.7-alpine3.11
         environment:
