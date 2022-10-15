@@ -17,3 +17,7 @@ jobs:
       - run:
           name: Build Docker image
           command: docker build --tag helloworld .
+      # List image
+      - run:
+          name: List Docker image
+          command: docker image ls
