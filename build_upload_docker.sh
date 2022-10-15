@@ -2,9 +2,10 @@
 
 # Step 1:
 echo "Start docker service"
+sudo service docker start
 sudo docker version
-service docker.io status
-service docker.io start
+#service docker.io status
+#service docker.io start
 
 # Step 1:
 # Build image and add a descriptive tag
