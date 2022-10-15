@@ -2,7 +2,9 @@
 
 # Step 1:
 echo "Start docker service"
-sudo systemctl start docker 
+#sudo systemctl start docker 
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo docker version
 #service docker.io status
 #service docker.io start
