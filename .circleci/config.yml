@@ -32,8 +32,9 @@ jobs:
       - run:
           name: Load docker
           command: |
-            lsb_release -a
+            #lsb_release -a
             uname -a
+            cat /etc/os-release
             #docker image ls
 
   lint-code:
