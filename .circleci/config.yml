@@ -24,6 +24,16 @@ commands:
           
 jobs:
 
+  docker-load:
+    docker:
+      - image: circleci/python:3.7.3-stretch
+    steps:
+      - checkout
+      - run:
+          name: Load docker
+          command: |
+            docker image ls
+
   lint-code:
     docker:
       - image: circleci/python:3.7.3-stretch
@@ -49,6 +59,109 @@ jobs:
           command: |
             ./build_upload_docker.sh
 
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: yum -y install tar gzip
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --region us-east-1 \
+              --template-file .circleci/files/backend.yml \
+              --tags project=UdaPeople \
+              --stack-name "UdaPeople-BackEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+          #no_output_timeout: 30m
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --region us-east-1 \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=UdaPeople \
+              --stack-name "UdaPeople-FrontEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+              --region us-east-1 \
+              --filters "Name=tag:Name,Values=UdaPeople-BackEnd-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text >> .circleci/ansible/inventory.txt
+      - run: cat .circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      - destroy-environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
+          region: us-east-1
+
+  configure-infrastructure:
+    docker:
+      - image: python:3.7-alpine3.11
+        environment:
+          PATH: "/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
+          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
+          TYPEORM_HOST: $TYPEORM_HOST
+          TYPEORM_PORT: $TYPEORM_PORT
+          TYPEORM_USERNAME: $TYPEORM_USERNAME
+          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+          TYPEORM_DATABASE: $TYPEORM_DATABASE
+          TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+          TYPEORM_MIGRATIONS_DIR: $TYPEORM_MIGRATIONS_DIR
+    steps:
+      - run:
+          name: Install dependencies - ssh git
+          command: |
+            apk add --update openssh-client git
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["63:9f:9c:a0:21:84:af:01:f2:a6:c8:16:f8:93:02:13"] 
+      - attach_workspace:
+          at: ~/
+      - run: cat .circleci/ansible/inventory.txt
+      - run:
+          name: Install dependencies - pip
+          command: |
+            python3 -m pip install --upgrade pip
+      - run:
+          name: Install dependencies - awscli
+          command: |
+            python3 -m pip install --user awscli
+      - run:
+          name: Install dependencies - ansible
+          command: |
+            apk add --update ansible 
+      - run:
+          name: Configure server
+          command: |
+            echo ENVIRONMENT=production > "backend/.env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
+            cd .circleci/ansible
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook -i inventory.txt configure-server.yml
+      # Rollback on failure      
+      - destroy-environment:
+          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          event: on_fail
+          region: us-east-1
+
+#--------------------------------------------------------------------------------            
   test-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -551,9 +664,10 @@ jobs:
 workflows:
   default:
     jobs:
-      - lint-code
-      - build-docker-image:
-          requires: [lint-code]
+      - docker-load
+#      - lint-code
+#      - build-docker-image:
+#          requires: [lint-code]
 #      - build-backend
 #      - test-frontend:
 #          requires: [build-frontend]
