@@ -32,10 +32,6 @@ jobs:
       - run:
           name: Lint code
           command: |
-            echo $PATH
-            export PATH="$HOME/.local/bin:$PATH"
-            echo $PATH
-            ls -al
             make setup
             make install
             make lint
@@ -48,11 +44,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Back-end build
+          name: Build docker image
           command: |
-            cd source
-            install docker
-            ./run_docker.sh
+            which docker
+            #./run_docker.sh
 
   test-frontend:
     docker:
@@ -557,6 +552,7 @@ workflows:
   default:
     jobs:
       - lint-code
+      - build-docker-image
 #      - build-backend
 #      - test-frontend:
 #          requires: [build-frontend]

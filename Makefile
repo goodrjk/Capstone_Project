@@ -12,14 +12,10 @@ setup:
 
 install:
 	# This should be run from inside a virtualenv
-	#sudo apt install libgmp-dev python3-dev
 	pip install --user --upgrade pip &&\
 		pip install --user -r requirements.txt
 	wget -O ./hadolint https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64
 	chmod +x ./hadolint
-	#sudo apt update
-	#sudo apt install lp-solve
-	#which lp_solve
 
 test:
 	# Additional, optional, tests could go here
@@ -35,4 +31,4 @@ lint:
 	# This should be run from inside a virtualenv
 	pylint --disable=R,C,W1203,W1202 app.py solver_test.py
 
-all: install lint test
+all: setup install lint test
