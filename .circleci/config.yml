@@ -553,7 +553,7 @@ workflows:
   default:
     jobs:
       - lint-code
-      - build-docker-image
+      - build-docker-image:
           requires: [lint-code]
 #      - build-backend
 #      - test-frontend:
