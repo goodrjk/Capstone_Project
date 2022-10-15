@@ -2,7 +2,7 @@
 
 # Step 1:
 echo "Start docker service"
-sudo service docker start
+sudo systemctl docker start
 sudo docker version
 #service docker.io status
 #service docker.io start
