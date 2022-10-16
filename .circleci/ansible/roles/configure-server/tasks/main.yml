@@ -14,21 +14,6 @@
   apt:
     autoremove: yes
 
-- name: "install dependencies."
-  become: yes
-  apt:
-    name: ["nodejs", "npm"]
-    state: latest
-    update_cache: yes
-
-- name: "install pm2"
-  become: yes
-  npm:
-    name: pm2
-    global: yes
-    production: yes
-    state: present
-
 - name: Creates directory to store test output
   file:
     path: /home/ubuntu/gjohn
@@ -36,12 +21,20 @@
 
 - name: Creates directory to store test output
   shell: |
-    echo "which pm2"  > /home/ubuntu/gjohn/test_out
-    which pm2 >> /home/ubuntu/gjohn/test_out
-    echo "ls /home/ubuntu"  >> /home/ubuntu/gjohn/test_out
-    ls -al /home/ubuntu >> /home/ubuntu/gjohn/test_out
-    echo "which pm2"  >> /home/ubuntu/gjohn/test_out
-    which pm2 >> /home/ubuntu/gjohn/test_out
+    cd /home/ubuntu/gjohn
+    curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    chmod +x ./kubectl
+    sudo mv ./kubectl /usr/local/bin/kubectl
+    kubectl version --client
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    chmod +x minikube
+    sudo mv minikube /usr/local/bin/
+    minikube version
+    sudo apt-get update -y &&  sudo apt-get install -y docker.io
+    sudo docker version
+    sudo usermod -aG docker $USER && newgrp docker
+    minikube start --driver=docker
+    minikube status
 #- name: Creates directory
 #  file:
 #    path: ~/web
@@ -55,3 +48,9 @@
 #- name: Executing node
 #  shell: |
 #    pm2 start ~/web/index.js -f
+#    echo "which pm2"  > /home/ubuntu/gjohn/test_out
+#    which pm2 >> /home/ubuntu/gjohn/test_out
+#    echo "ls /home/ubuntu"  >> /home/ubuntu/gjohn/test_out
+#    ls -al /home/ubuntu >> /home/ubuntu/gjohn/test_out
+#    echo "which pm2"  >> /home/ubuntu/gjohn/test_out
+#    which pm2 >> /home/ubuntu/gjohn/test_out

@@ -30,10 +30,9 @@ Resources:
       KeyName: gjohn 
       ImageId: ami-0ee23bfc74a881de5
       BlockDeviceMappings:
-        DeviceName: /dev/nvme0n1
-        Ebs:
-          DeleteOnTermination: true
-          VolumeSize: 29
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 29
       Tags:
         - Key: Name
           Value: !Sub Capstone-${ID}

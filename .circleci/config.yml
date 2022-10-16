@@ -636,6 +636,8 @@ workflows:
   default:
     jobs:
       - deploy-infrastructure
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
 #      - docker-load
 #      - lint-code
 #      - build-docker-image:
