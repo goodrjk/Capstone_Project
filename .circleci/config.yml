@@ -122,7 +122,6 @@ jobs:
       - run:
           name: Configure server
           command: |
-            echo ENVIRONMENT=production > "backend/.env"
             cd .circleci/ansible
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt configure-server.yml
