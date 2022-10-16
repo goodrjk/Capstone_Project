@@ -23,6 +23,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
+            aws cloudformation describe-stack-events --region << parameters.region >> --stack-name Capstone-<< parameters.id >>
             aws cloudformation delete-stack --region << parameters.region >> --stack-name Capstone-<< parameters.id >>
           
 jobs:
