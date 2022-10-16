@@ -175,25 +175,25 @@ Set Up Pipeline
 
 CRITERIA
 MEETS SPECIFICATIONS
-Create Github repository with project code.
+DONE	Create Github repository with project code.
 
-All project code is stored in a GitHub repository and a link to the repository has been provided for reviewers.
+DONE	All project code is stored in a GitHub repository and a link to the repository has been provided for reviewers.
 
-Use image repository to store Docker images
+DONE	Use image repository to store Docker images
 
-The project uses a centralized image repository to manage images built in the project. After a clean build, images are pushed to the repository.
+DONE	The project uses a centralized image repository to manage images built in the project. After a clean build, images are pushed to the repository.
 
 Build Docker Container
 
 CRITERIA
 MEETS SPECIFICATIONS
-Execute linting step in code pipeline
+DONE	Execute linting step in code pipeline
 
-Code is checked against a linter as part of a Continuous Integration step (demonstrated w/ two screenshots)
+DONE	Code is checked against a linter as part of a Continuous Integration step (demonstrated w/ two screenshots)
 
-Build a Docker container in a pipeline
+DONE	Build a Docker container in a pipeline
 
-The project takes a Dockerfile and creates a Docker container in the pipeline.
+DONE	The project takes a Dockerfile and creates a Docker container in the pipeline.
 
 Successful Deployment
 
@@ -216,7 +216,7 @@ https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
 https://blog.devgenius.io/deploy-images-to-dockerhub-with-circleci-3f5b716cfe1e
 https://emmer.dev/blog/publishing-docker-images-with-circleci/
 https://docs.docker.com/docker-hub/access-tokens/#create-an-access-token
-
+https://medium.com/geekculture/configure-aws-credentials-in-circle-ci-8353d765aa15
 
 ================================================================================
 Spare stuff
@@ -247,6 +247,63 @@ sudo systemctl status docker
 docker
 docker info
 docker run hello-world
+
+
+ami-0ee23bfc74a881de5
+ami-0ee23bfc74a881de5
+
+Step 1: Add Environment Variables
+As a first step, add environment variables in your Circle CI project for AWS_REGION, AWS_SECRET_KEY and AWS_ACCESS_KEY
+
+
+Add environment variable to your Circle CI project
+Step 2: Include Circle CI Orb for AWS CLI
+Next, include an orb for AWS CLI by adding the following at the top of your config.yaml file.
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0.6
+Step 3: Add a Job for Configuring Credentials
+Finally, add a job for configuring the AWS credentials. Provide the names of the environment variables that you set in Step 1.
+
+jobs:
+  aws-cli-cred-setup:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_ACCESS_SECRET
+          aws-region: AWS_REGION_NAME
+workflows:
+  aws-cli:
+    jobs:
+      - aws-cli-cred-setup:
+          context: aws
+Complete Configuration
+Here’s the complete config.yaml file for your CircleCI build.
+
+version: '2.1'
+orbs:
+  aws-cli: circleci/aws-cli@2.0
+jobs:
+  aws-cli-cred-setup:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_ACCESS_SECRET
+          aws-region: AWS_REGION_NAME
+workflows:
+  aws-cli:
+    jobs:
+      - aws-cli-cred-setup:
+          context: aws
+Once you the above build is run, you should see that all the AWS configuration is setup successfully.
+
+
+Successful CircleCI build
+That’s it for this post. Please leave a clap if you found the post to be helpful. Consider taking a Medium membership to continue reading all my premium articles along with 1000s of other stories.
+
+
 
 
 
