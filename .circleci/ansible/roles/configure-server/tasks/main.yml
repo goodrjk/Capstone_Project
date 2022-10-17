@@ -48,12 +48,14 @@
     #sudo docker version
     sudo usermod -aG docker $USER 
 
+- name: Change group
+  shell: |
+    newgrp docker
+
 - name: Start minikube
   shell: |
     echo "Start Minikube"
-    newgrp docker
     cd /home/ubuntu/gjohn
-    echo "Before Minikube Start"
     minikube start --driver=docker
     minikube status
 
