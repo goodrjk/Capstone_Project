@@ -41,14 +41,19 @@
   shell: |
     echo "Install docker"
     cd /home/ubuntu/gjohn
-    sudo apt-get update -y &&  sudo apt-get install -y docker.io
-    sudo docker version
-    sudo usermod -aG docker $USER && newgrp docker
+    sudo apt-get update -y 
+    echo "After apt update"
+    sudo apt-get install -y docker.io
+    echo "After Install docker"
+    #sudo docker version
+    sudo usermod -aG docker $USER 
 
 - name: Start minikube
   shell: |
     echo "Start Minikube"
+    newgrp docker
     cd /home/ubuntu/gjohn
+    echo "Before Minikube Start"
     minikube start --driver=docker
     minikube status
 
