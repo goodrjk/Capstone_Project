@@ -19,22 +19,39 @@
     path: /home/ubuntu/gjohn
     state: directory
 
-- name: Creates directory to store test output
+- name: Install kubectl
   shell: |
+    echo "Install kubectl"  
     cd /home/ubuntu/gjohn
     curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
     chmod +x ./kubectl
     sudo mv ./kubectl /usr/local/bin/kubectl
     kubectl version --client
+
+- name: Install minikube
+  shell: |
+    echo "Install minikube"
+    cd /home/ubuntu/gjohn
     curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     chmod +x minikube
     sudo mv minikube /usr/local/bin/
     minikube version
+
+- name: Install docker
+  shell: |
+    echo "Install docker"
+    cd /home/ubuntu/gjohn
     sudo apt-get update -y &&  sudo apt-get install -y docker.io
     sudo docker version
     sudo usermod -aG docker $USER && newgrp docker
+
+- name: Start minikube
+  shell: |
+    echo "Start Minikube"
+    cd /home/ubuntu/gjohn
     minikube start --driver=docker
     minikube status
+
 #- name: Creates directory
 #  file:
 #    path: ~/web
