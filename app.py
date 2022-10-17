@@ -30,6 +30,7 @@ def predict():
     """Performs an sklearn prediction
         
         input looks like:
+
         {
         "CHAS":{
         "0":0
@@ -75,10 +76,9 @@ if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80, debug=True) # specify port=80
 
 
-c = array([1., 2., 3.])
-G = array([[1., 2., -1.], [2., 0., 1.], [1., 2., 1.], [-1., -1., -1.]])
-h = array([4., 1., 3., 2.])
+#c = array([1., 2., 3.])
+#G = array([[1., 2., -1.], [2., 0., 1.], [1., 2., 1.], [-1., -1., -1.]])
+#h = array([4., 1., 3., 2.])
 
-print("LP solution:", solve_lp(c, G, h))
+#print("LP solution:", solve_lp(c, G, h))
 
-exit()

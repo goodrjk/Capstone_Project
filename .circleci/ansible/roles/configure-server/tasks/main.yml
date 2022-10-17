@@ -47,17 +47,7 @@
     echo "After Install docker"
     #sudo docker version
     sudo usermod -aG docker $USER 
-
-- name: Change group
-  shell: |
-    newgrp docker
-
-- name: Start minikube
-  shell: |
-    echo "Start Minikube"
-    cd /home/ubuntu/gjohn
-    minikube start --driver=docker
-    minikube status
+    sudo usermod -g docker $USER 
 
 #- name: Creates directory
 #  file:

@@ -1,0 +1,8 @@
+---
+- name: Start minikube
+  shell: |
+    echo "Start Minikube"
+    cd /home/ubuntu/gjohn
+    minikube start --driver=docker
+    minikube status
+
