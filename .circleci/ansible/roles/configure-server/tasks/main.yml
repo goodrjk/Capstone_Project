@@ -46,8 +46,8 @@
     sudo apt-get install -y docker.io
     echo "After Install docker"
     #sudo docker version
-    sudo usermod -aG docker $USER 
-    sudo usermod -g docker $USER 
+    sudo usermod -aG docker ubuntu
+    #sudo usermod -g docker ubuntu
 
 #- name: Creates directory
 #  file:
