@@ -27,5 +27,4 @@
 
   roles:
     - configure-server
-    - start-minikube
 

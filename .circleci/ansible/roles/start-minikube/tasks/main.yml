@@ -3,6 +3,6 @@
   shell: |
     echo "Start Minikube"
     cd /home/ubuntu/gjohn
-    runuser -l ubuntu 'minikube start --driver=docker'
-    runuser -l ubuntu 'minikube status'
+    minikube start
+    minikube status
 
