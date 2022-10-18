@@ -127,10 +127,10 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
             #ansible-playbook -i inventory.txt start-minikube.yml
       # Rollback on failure      
-      - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
-          event: on_fail
-          region: us-east-1
+      #- destroy-environment:
+      #    id: ${CIRCLE_WORKFLOW_ID:0:7}
+      #    event: on_fail
+      #    region: us-east-1
 
 #--------------------------------------------------------------------------------            
   test-frontend:
