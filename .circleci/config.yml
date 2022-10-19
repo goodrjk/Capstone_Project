@@ -656,8 +656,8 @@ workflows:
       - deploy-infrastructure
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-#      - deploy-docker:
-#          requires: [configure-infrastructure]
+      - deploy-docker:
+          requires: [configure-infrastructure]
 #      - build-docker-image:
 #          requires: [lint-code]
 #      - build-backend
