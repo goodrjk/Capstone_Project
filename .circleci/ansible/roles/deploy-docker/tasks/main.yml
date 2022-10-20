@@ -10,6 +10,6 @@
     # Forward the container port to a host
     kubectl expose deployment kb4 --type=LoadBalancer --name=kb4-service --port=80 --target-port=80
     sleep 180
-    kubectl port-forward deployment/kb4 8000:80
+    kubectl port-forward deployment/kb4 8000:80 &
     kubectl logs --selector app=kb4
 

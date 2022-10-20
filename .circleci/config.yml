@@ -61,6 +61,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: export ID_NAME=`cat name.txt`
       - run: yum -y install tar gzip
       - run:
           name: Ensure EC2 infrastructure exists
@@ -69,15 +70,15 @@ jobs:
               --region us-east-1 \
               --template-file .circleci/files/kubernetes.yml \
               --tags project=Capstone \
-              --stack-name "Capstone-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+              --stack-name "Capstone-${ID_NAME}" \
+              --parameter-overrides ID="${ID_NAME}"  
               #no_output_timeout: 30m
       - run:
           name: Add EC2 ip to ansible inventory
           command: |
             aws ec2 describe-instances \
               --region us-east-1 \
-              --filters "Name=tag:Name,Values=Capstone-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --filters "Name=tag:Name,Values=Capstone-${ID_NAME}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> .circleci/ansible/inventory.txt
       - run: cat .circleci/ansible/inventory.txt
@@ -86,7 +87,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
-          id: ${CIRCLE_WORKFLOW_ID:0:7}
+          id: ${ID_NAME}
           event: on_fail
           region: us-east-1
 
@@ -97,6 +98,7 @@ jobs:
           PATH: "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
           #TYPEORM_CONNECTION: $TYPEORM_CONNECTION
     steps:
+      - run: export ID_NAME=`cat name.txt`
       - run:
           name: Install dependencies - ssh git
           command: |
@@ -128,7 +130,7 @@ jobs:
             ansible-playbook -i inventory.txt start-minikube.yml
       # Rollback on failure      
       #- destroy-environment:
-      #    id: ${CIRCLE_WORKFLOW_ID:0:7}
+      #    id: ${ID_NAME}
       #    event: on_fail
       #    region: us-east-1
 
