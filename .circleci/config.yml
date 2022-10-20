@@ -136,10 +136,22 @@ jobs:
     docker:
       - image: python:3.7-alpine3.11
     steps:
+      - run:
+          name: Install dependencies - ssh git
+          command: |
+            apk add --update openssh-client git
       - checkout
       - attach_workspace:
           at: ~/
       - run: cat .circleci/ansible/inventory.txt
+      - run:
+          name: Install dependencies - pip
+          command: |
+            python3 -m pip install --upgrade pip
+      - run:
+          name: Install dependencies - ansible
+          command: |
+            apk add --update ansible 
       - run:
           name: Configure server
           command: |
