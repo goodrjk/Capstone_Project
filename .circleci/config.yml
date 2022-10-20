@@ -61,11 +61,14 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - run: export ID_NAME=`cat name.txt`
+      - run: 
+          name: Store name ID 
+          command: echo "export ID_NAME=$(cat name.txt)" >> "$BASH_ENV"
       - run: yum -y install tar gzip
       - run:
           name: Ensure EC2 infrastructure exists
           command: |
+            echo ${ID_NAME}
             aws cloudformation deploy \
               --region us-east-1 \
               --template-file .circleci/files/kubernetes.yml \
@@ -98,12 +101,14 @@ jobs:
           PATH: "/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin"
           #TYPEORM_CONNECTION: $TYPEORM_CONNECTION
     steps:
-      - run: export ID_NAME=`cat name.txt`
       - run:
           name: Install dependencies - ssh git
           command: |
             apk add --update openssh-client git
       - checkout
+      - run: 
+          name: Store name ID 
+          command: echo "export ID_NAME=$(cat name.txt)" >> "$BASH_ENV"
       - add_ssh_keys:
           fingerprints: ["63:9f:9c:a0:21:84:af:01:f2:a6:c8:16:f8:93:02:13"] 
       - attach_workspace:
