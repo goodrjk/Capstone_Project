@@ -183,14 +183,13 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            
             aws cloudformation --region=us-east-1 describe-stacks | grep StackName \
                    | awk -F\" '{print $4}' | grep Capstone | grep -v "Capstone-${ID_NAME}" > trash_stacks
             cat trash_stacks
-            for stack in $(cat trash_stacks); do
-                echo "Deleting $stack"
-                aws cloudformation delete-stack --region us-east-1 --stack-name ${stack} 
-            done
+            #for stack in $(cat trash_stacks); do
+            #    echo "Deleting $stack"
+            #    aws cloudformation delete-stack --region us-east-1 --stack-name ${stack} 
+            #done
                     
 
 #--------------------------------------------------------------------------------            
