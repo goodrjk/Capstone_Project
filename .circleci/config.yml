@@ -184,22 +184,14 @@ jobs:
           name: Remove old stacks and files
           command: |
             
-            ## Fetch the Old workflow ID
-            OldWorkflow=$(cat OldWorkflow.txt)
-            echo "OldWorkflow = ${OldWorkflow}"
-            echo "CIRCLE_WORKFLOW_ID = ${CIRCLE_WORKFLOW_ID:0:7}"
-
-            if [[ "${OldWorkflow}" != ${CIRCLE_WORKFLOW_ID:0:7} ]]
-            then
-              # Check if bucket exists before trying to clear it
-              if [[ $(aws s3api head-bucket --bucket "udapeople-${OldWorkflow}" 2>&1) == '' ]]
-              then
-                aws s3 rm "s3://udapeople-${OldWorkflow}" --recursive
-                sleep 30
-              fi
-              aws cloudformation delete-stack --region us-east-1 --stack-name "UdaPeople-BackEnd-${OldWorkflow}" 
-              aws cloudformation delete-stack --region us-east-1 --stack-name "UdaPeople-FrontEnd-${OldWorkflow}" 
-            fi
+            aws cloudformation --region=us-east-1 describe-stacks | grep StackName \
+                   | awk -F\" '{print $4}' | grep Capstone | grep -v "Capstone-${ID_NAME}" > trash_stacks
+            cat trash_stacks
+            for stack in $(cat trash_stacks); do
+                echo "Deleting $stack"
+                aws cloudformation delete-stack --region us-east-1 --stack-name ${stack} 
+            done
+                    
 
 #--------------------------------------------------------------------------------            
   test-frontend:
@@ -714,6 +706,8 @@ workflows:
           requires: [deploy-infrastructure]
       - deploy-docker:
           requires: [configure-infrastructure]
+      - cleanup:
+          requires: [deploy-docker]
 #      - build-docker-image:
 #          requires: [lint-code]
 #      - build-backend
