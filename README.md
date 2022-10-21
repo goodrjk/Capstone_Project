@@ -42,7 +42,8 @@ DockerHub	https://hub.docker.com/repository/docker/goodrjk/udacity_5
 ### cleanup
 	Delete all old Capstone AWS stacks
 
-
+![Lint failure main](./Screenshots/lint_failure_main.png)
+![Lint failure details](./Screenshots/lint_failure_details.png)
 
 
 |  File                 |    Purpose                                                                   |
