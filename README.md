@@ -1,5 +1,5 @@
 # Capstone_Project
-Capstone Project for Udacity Cloud Devops Engineer
+## Capstone Project for Udacity Cloud Devops Engineer
 
 ## CircleCI Pipeline Jobs
 
