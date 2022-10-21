@@ -8,6 +8,7 @@ WORKDIR /app
 # Copy source code to working directory
 COPY . app.py /app/
 
+Error
 ## Step 3:
 # Install packages from requirements.txt
 # hadolint ignore=DL3013

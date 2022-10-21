@@ -4,13 +4,6 @@
 ### CircleCI Badge for goodrjk/Capstone_Project   
 [![goodrjk](https://circleci.com/gh/goodrjk/Capstone_Project.svg?style=svg)](https://circleci.com/gh/goodrjk/Capstone_Project/?branch=main)
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/goodrjk/Capstone_Project/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/goodrjk/Capstone_Project/tree/main)
-
-### Project Summary
-
-Using a pre-trained, `sklearn` model that has been trained to predict housing prices in Boston according to several factors, build a Docker image to allow for starting the app and obtaining house price predictions running both locally and in a Kubernetes cluster.
-This requires building and testing the environment, defining and building the Docker image, uploading the new image to Docker, configuring Kubernetes and deploying the container to the cluster. 
-
 ## Links
 
 Github		https://github.com/goodrjk/Capstone_Project
@@ -19,9 +12,14 @@ CircleCI	https://app.circleci.com/pipelines/github/goodrjk/Capstone_Project?bran
 
 DockerHub	https://hub.docker.com/repository/docker/goodrjk/udacity_5
 	
-### Required files for submission:
+### Project Summary
 
-## CircleCI Pipeline Jobs
+The focus of the project to automate building a Docker image, standing AWS infrasture and Kubernetes cluster and deploying the Docker container to the cluster. 
+The application used was the Boston real estate predictor from the fourth project of the course.
+The repo was stored in GitHub. CircleCI was used to build the continuous integration pipeline. AWS was used to provide the infrastructure.
+
+
+## Description of the CircleCI Pipeline Jobs
 
 ### lint-code
 	Check Dockerfile with hadolint  
@@ -42,56 +40,75 @@ DockerHub	https://hub.docker.com/repository/docker/goodrjk/udacity_5
 ### cleanup
 	Delete all old Capstone AWS stacks
 
+## Sets Up Pipeline
+
+### Create Github repository with project code
+
+Code is stored in Github repo at:
+
+	https://github.com/goodrjk/Capstone_Project
+
+Continuous Integration Pipeline is Set Up in CircleCI at:
+
+	https://app.circleci.com/pipelines/github/goodrjk/Capstone_Project?branch=main
+	
+### Use image repository to store Docker images
+
+Images are stored in DockerHub at:
+
+	https://hub.docker.com/repository/docker/goodrjk/udacity_5
+
+## Build Docker Container
+
+Execute linting step in code pipeline 
+
+	Screenshots of failed lint step
+
 ![Lint failure main](./Screenshots/lint_failure_main.png)
 ![Lint failure details](./Screenshots/lint_failure_details.png)
 
+	Screenshot of successful failed lint step
 
-|  File                 |    Purpose                                                                   |
-| ------------------    | --------------------------------------------------------------------------   |
-| README.me             | This file                                                                    |
-| Dockerfile            | Configuration file to build and test Docker image                            |
-| Makefile              | Configuration file to install and lint                                       | 
-| app.py                | Boston Real Estate Prediction Application                                    |
-| make_prediction.sh    | Bash shell script to call app with test data                                 |
-| run_docker.sh         | Script to build docker container and launch app                              |
-| upload_docker.sh      | Script to upload Docker image to goodrjk/udacity_4:firstimage                |
-| run_kubernetes.sh     | Script to run                                                                |
-| docker_out.txt        | Output from application window and prediction window running local docker    |
-| kubernetes_out.txt    | Output from application window and prediction window running with Kubernetes |
-| .circleci/config.yml  | Configuration file for CircleCI to test repo                                 |
+![Lint success](./Screenshots/lint_success.png)
 
-### Script Execution
+Build a Docker container in a pipeline 
 
-Build environment
+	Screenshot of successful pipeline building and deploying Docker image
 
-	make install
+![Blue CircleCI Success](./Screenshots/blue_circleci_success.png)
 
-Test code
+	Screenshots of Blue stack and EC2 in AWS Console
 
-	make lint
+![Blue Stack](./Screenshots/blue_stack.png)
+![Blue EC2](./Screenshots/blue_ec2.png)
+![Details of Blue EC2](./Screenshots/blue_ec2_details.png)
 
-Create docker container and launch app
+	Screenshot of docker image in DockerHub
 
-	./run_docker.sh
+![Docker Hub](./Screenshots/dockerhub.png)
 
-Make Prediction with local Docker container
+## Successful Deployment
 
-	./make_prediction.sh
+The Docker container is deployed to a Kubernetes cluster 
 
-Upload Docker image to DockerHub
+	Screenshots showing status of Kubernetes cluster and docker image deployment
 
-	./upload_docker.sh
+![Kubernetes Status 1](./Screenshots/kubernetes_status_1.png)
+![Kubernetes Status 2](./Screenshots/kubernetes_status_2.png)
 
-Start minikube
+Use Blue/Green Deployment or a Rolling Deployment successfully
 
-	minikube start
+	Screenshots showing both Blue and Green stacks and EC2 during transition
 
-Deploy container and launch app
+![Both Blue and Green Stack](./Screenshots/blue_green_stack.png)
+![Both Blue and Green EC2](./Screenshots/blue_green_ec2.png)
 
-	./run_kubernetes.sh
+	Screenshot showing Green pipeline success
+ 
+![Green CircleCI Success](./Screenshots/green_circleci_success.png)
 
-Make Prediction with Kubernetes
+	Screenshots of Green stack and EC2 in AWS Console
 
-	./make_prediction.sh
-
+![Green Stack](./Screenshots/green_stack.png)
+![Green EC2](./Screenshots/green_ec2.png)
 
