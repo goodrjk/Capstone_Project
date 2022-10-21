@@ -67,7 +67,7 @@ Execute linting step in code pipeline
 ![Lint failure main](./Screenshots/lint_failure_main.png)
 ![Lint failure details](./Screenshots/lint_failure_details.png)
 
-	Screenshot of successful failed lint step
+	Screenshot of successful lint step
 
 ![Lint success](./Screenshots/lint_success.png)
 
