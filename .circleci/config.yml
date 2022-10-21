@@ -704,11 +704,12 @@ jobs:
 workflows:
   default:
     jobs:
-      - lint-code
-      - docker-load:
-          requires: [lint-code]
-      - deploy-infrastructure:
-          requires: [docker-load]
+#      - lint-code
+#      - docker-load:
+#          requires: [lint-code]
+#      - deploy-infrastructure:
+#          requires: [docker-load]
+      - deploy-infrastructure
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - deploy-docker:
