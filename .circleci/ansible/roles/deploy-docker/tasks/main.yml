@@ -4,9 +4,9 @@
     echo "Deploy Docker to Kubernetes"
     cd /home/ubuntu/gjohn
     # This is your Docker ID/path
-    dockerpath=goodrjk/udacity_4:firstimage
+    dockerpath=goodrjk/udacity_5:latest
     # Run the Docker Hub container with kubernetes
-    kubectl create deployment kb4 --image=goodrjk/udacity_4:firstimage --port=80
+    kubectl create deployment kb4 --image=goodrjk/udacity_5:latest --port=80
     # Forward the container port to a host
     kubectl expose deployment kb4 --type=LoadBalancer --name=kb4-service --port=80 --target-port=80
     sleep 180

@@ -166,6 +166,41 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i inventory.txt deploy-docker.yml
 
+  cleanup:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          name: Store name ID 
+          command: echo "export ID_NAME=$(cat name.txt)" >> "$BASH_ENV"
+      - run:
+          name: Install dependencies - tar gzip
+          command: |
+            yum -y install tar gzip
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Remove old stacks and files
+          command: |
+            
+            ## Fetch the Old workflow ID
+            OldWorkflow=$(cat OldWorkflow.txt)
+            echo "OldWorkflow = ${OldWorkflow}"
+            echo "CIRCLE_WORKFLOW_ID = ${CIRCLE_WORKFLOW_ID:0:7}"
+
+            if [[ "${OldWorkflow}" != ${CIRCLE_WORKFLOW_ID:0:7} ]]
+            then
+              # Check if bucket exists before trying to clear it
+              if [[ $(aws s3api head-bucket --bucket "udapeople-${OldWorkflow}" 2>&1) == '' ]]
+              then
+                aws s3 rm "s3://udapeople-${OldWorkflow}" --recursive
+                sleep 30
+              fi
+              aws cloudformation delete-stack --region us-east-1 --stack-name "UdaPeople-BackEnd-${OldWorkflow}" 
+              aws cloudformation delete-stack --region us-east-1 --stack-name "UdaPeople-FrontEnd-${OldWorkflow}" 
+            fi
+
 #--------------------------------------------------------------------------------            
   test-frontend:
     docker:
@@ -634,7 +669,7 @@ jobs:
       - revert-migrations:
           id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  cleanup:
+  cleanupx:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -669,10 +704,11 @@ jobs:
 workflows:
   default:
     jobs:
-#      - lint-code
-#      - docker-load:
-#          requires: [lint-code]
-      - deploy-infrastructure
+      - lint-code
+      - docker-load:
+          requires: [lint-code]
+      - deploy-infrastructure:
+          requires: [docker-load]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - deploy-docker:
